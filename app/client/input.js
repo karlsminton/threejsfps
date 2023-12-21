@@ -2,6 +2,7 @@ class InputController
 {
     constructor ()
     {
+        window.debug = false;
         this.init()
     }
 
@@ -65,6 +66,11 @@ class InputController
     {
         this._state.mouseX = e.pageX - window.innerWidth / 2;
         this._state.mouseY = e.pageY - window.innerHeight / 2;
+        // this._state.mouseX = e.movementX - window.innerWidth / 2;
+        // this._state.mouseY = e.movementY - window.innerHeight / 2;
+
+        console.log(`movementX ${e.movementX}
+movementY ${e.movementY}`)
 
         if (this.previous === null) {
             this.previous = { ...this._state }
@@ -74,16 +80,18 @@ class InputController
         this._state.mouseYDelta = this._state.mouseY - this.previous.mouseY;
 
         // debug
-        console.log()
-        console.log('Current MouseX ', this._state.mouseX)
-        console.log('Current MouseY ', this._state.mouseY)
+        if (window.debug === true) {
+            var debugString = 
+            `Current MouseX - ${this._state.mouseX}
+Current MouseY - ${this._state.mouseY}
 
-        console.log('Previous MouseX ', this.previous.mouseX)
-        console.log('Previous MouseY ', this.previous.mouseY)
+Previous MouseX - ${this.previous.mouseX}
+Previous MouseY - ${this.previous.mouseY}
 
-        console.log('Mouse X Delta ', this._state.mouseXDelta)
-        console.log('Mouse Y Delta ', this._state.mouseYDelta)
-        console.log()
+Mouse X Delta - ${this._state.mouseXDelta}
+Mouse Y Delta - ${this._state.mouseYDelta}`
+            console.log(debugString);
+        }
     }
 
     update()
