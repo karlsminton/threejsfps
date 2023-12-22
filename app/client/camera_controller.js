@@ -3,6 +3,12 @@ import { InputController } from '/app/client/input.js'
 
 class FirstPersonCameraController
 {
+    static FIELD_OF_VIEW = 50
+
+    static FRUSTUM_NEAR = 0.1
+
+    static FRUSTUM_FAR = 1000
+
     constructor(camera)
     {
         this.camera = camera

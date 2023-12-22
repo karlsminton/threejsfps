@@ -4,16 +4,14 @@ import { FirstPersonCameraController } from '/app/client/camera_controller.js'
 
 function initialise() {
     const scene = new THREE.Scene();
+    // const loader = new FBXLoader();
+    // loader.load('static/swat.fbx', (o) => scene.add(o))
 
-    const loader = new FBXLoader();
-    loader.load('static/swat.fbx', (o) => scene.add(o))
-
-    // TODO fix magic numbers
     const camera = new THREE.PerspectiveCamera(
-        50,
-        window.innerWidth / window.innerHeight,
-        0.1,
-        1000
+        FirstPersonCameraController.FIELD_OF_VIEW,
+        getAspectRatio(),
+        FirstPersonCameraController.FRUSTUM_NEAR,
+        FirstPersonCameraController.FRUSTUM_FAR
     );
 
     const renderer = new THREE.WebGLRenderer();
@@ -21,8 +19,7 @@ function initialise() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 
     window.canvas = renderer.domElement;
-    const canvas = window.canvas;
-    document.body.appendChild(canvas);
+    document.body.appendChild(window.canvas);
 
     // TODO abstract making a map
     const geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -41,31 +38,19 @@ function initialise() {
     plane.position.z = 8;
     plane.position.y = -0.55;
     plane.rotation.x-=1.55;
-
-
     scene.add(plane);
 
     camera.position.z = 10;
 
     // Extract the following into separate client code
-
     let fullscreenRequested = false;
     if (document.fullscreenEnabled) {
         fullscreenRequested = window.confirm("requestFullscreen")
     }
 
     if (fullscreenRequested) {
-        canvas.requestFullscreen();
+        window.canvas.requestFullscreen();
     }
-
-    // requestPointerLock();
-
-    // if (pointerLockRequested) {
-    //     alert('pointerLockRequested')
-    //     canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock || canvas.webkitRequestPointerLock;
-    //     canvas.requestPointerLock();
-    // }
-
 
     const controller = new FirstPersonCameraController(camera);
 
@@ -78,6 +63,11 @@ function initialise() {
     animate();
 }
 
+function getAspectRatio()
+{
+    return window.innerWidth / window.innerHeight
+}
+
 function requestPointerLock() {
     let pointerLockRequested = false;
     if (
@@ -85,16 +75,13 @@ function requestPointerLock() {
         || 'mozPointerLockElement' in document
         || 'webkitPointerLockElement' in document
     ) {
-        // canvas.requestPointerLock();
-        pointerLockRequested = window.confirm("requestPointerLock");
-
-        // console.log(pointerLockRequested)
+        pointerLockRequested = window.confirm("Allow pointer-lock?");
 
         const pointerLockEvent = new CustomEvent(
             'pointerLockRequested', 
             {
                 detail: {
-                    requested: true
+                    requested: pointerLockRequested
                 }
             }
         );
@@ -104,8 +91,6 @@ function requestPointerLock() {
 }
 
 document.querySelector('#play').addEventListener('click', (e) => {
-    // alert('SHUT THE FUCK UP OK?!')
-    // requestPointerLock();
     initialise();
     
     setTimeout(() => {
@@ -114,10 +99,8 @@ document.querySelector('#play').addEventListener('click', (e) => {
 })
 
 document.addEventListener('pointerLockRequested', (e) => {
-    console.log(e.detail.requested)
-    alert(`
-        pointerLockRequested ${e.detail.requested === true ? 'true' : 'false'}
-    `)
-    canvas.requestPointerLock()
+    if (e.detail.requested === true) {
+        window.canvas.requestPointerLock()
+    }
 })
 

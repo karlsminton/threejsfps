@@ -69,15 +69,18 @@ class InputController
         // this._state.mouseX = e.movementX - window.innerWidth / 2;
         // this._state.mouseY = e.movementY - window.innerHeight / 2;
 
-        console.log(`movementX ${e.movementX}
-movementY ${e.movementY}`)
+        console.log(`movementX ${e.movementX}\nmovementY ${e.movementY}`)
 
         if (this.previous === null) {
             this.previous = { ...this._state }
         }
 
-        this._state.mouseXDelta = this._state.mouseX - this.previous.mouseX;
-        this._state.mouseYDelta = this._state.mouseY - this.previous.mouseY;
+        // this._state.mouseXDelta = this._state.mouseX - this.previous.mouseX;
+        // this._state.mouseYDelta = this._state.mouseY - this.previous.mouseY;
+
+        this._state.mouseXDelta = e.movementX;
+        this._state.mouseYDelta = e.movementY;
+
 
         // debug
         if (window.debug === true) {
