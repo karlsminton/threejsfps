@@ -9,20 +9,40 @@ class FirstPersonCameraController
 
     static FRUSTUM_FAR = 1000
 
+    previousTimestamp = null;
+
     constructor(camera)
     {
         this.camera = camera
         this.input = new InputController()
         this.rotation = new THREE.Quaternion()
-        this.translation = new THREE.Vector3()
+        this.translation = new THREE.Vector3(0, 0, 0)
         this.phi = 0
         this.theta = 0
     }
 
-    update(deltaTime) {
+    update(time) {
+        // if (this.previousTimestamp === null) {
+        //     this.previousTimestamp = t;
+        // }
+
+        // var deltaTime = timestamp - this.previousTimestamp;
+
+        const deltaTime = this.previousTimestamp - time
+
+
         this.updateRotation(deltaTime)
         this.camera.quaternion.copy(this.rotation)
+        this.camera.position.copy(this.translation)
         this.input.update()
+        this.updateTranslation(deltaTime)
+        console.log(deltaTime)
+
+        this.previousTimestamp = time
+
+        // this.previousTimestamp = timestamp;
+        // console.log(this.rotation)
+        // console.log(this.translation)
     }
 
     updateRotation(deltaTime) {
@@ -46,6 +66,26 @@ class FirstPersonCameraController
         q.multiply(qz)
 
         this.rotation.copy(q)
+    }
+
+    updateTranslation(deltaTime) {
+        const forwardVelocity = (this.input.keys[InputController.KEY_W] === true ? 1 : 0) + (this.input.keys[InputController.KEY_S] === true ? -1 : 0)
+        const sidewaysVelocity = (this.input.keys[InputController.KEY_A] ? 1 : 0) + (this.input.keys[InputController.KEY_D] ? -1 : 0)
+
+        const qx = new THREE.Quaternion();
+        qx.setFromAxisAngle(new THREE.Vector3(0, 1, 0), this.phi)
+
+        const forward = new THREE.Vector3(0, 0, -1)
+        forward.applyQuaternion(qx)
+        const val = forwardVelocity * deltaTime * 10;
+        forward.multiplyScalar(forwardVelocity * deltaTime * 10);
+
+        const left = new THREE.Vector3(-1, 0, 0)
+        left.applyQuaternion(qx)
+        left.multiplyScalar(sidewaysVelocity * deltaTime * 10);
+
+        this.translation.add(forward)
+        this.translation.add(left)
     }
 
     clamp(x, a, b) {

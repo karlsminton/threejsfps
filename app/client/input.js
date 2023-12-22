@@ -1,5 +1,13 @@
 class InputController
 {
+    static KEY_W = 87;
+
+    static KEY_A = 65;
+
+    static KEY_S = 83;
+
+    static KEY_D = 68;
+
     constructor ()
     {
         window.debug = false;
@@ -33,6 +41,7 @@ class InputController
     onKeyDown(e)
     {
         this.keys[e.keyCode] = true;
+        // console.log(this.keys);
     }
 
     onKeyUp(e)
@@ -66,34 +75,17 @@ class InputController
     {
         this._state.mouseX = e.pageX - window.innerWidth / 2;
         this._state.mouseY = e.pageY - window.innerHeight / 2;
-        // this._state.mouseX = e.movementX - window.innerWidth / 2;
-        // this._state.mouseY = e.movementY - window.innerHeight / 2;
-
-        console.log(`movementX ${e.movementX}\nmovementY ${e.movementY}`)
 
         if (this.previous === null) {
             this.previous = { ...this._state }
         }
 
-        // this._state.mouseXDelta = this._state.mouseX - this.previous.mouseX;
-        // this._state.mouseYDelta = this._state.mouseY - this.previous.mouseY;
-
         this._state.mouseXDelta = e.movementX;
         this._state.mouseYDelta = e.movementY;
 
-
         // debug
         if (window.debug === true) {
-            var debugString = 
-            `Current MouseX - ${this._state.mouseX}
-Current MouseY - ${this._state.mouseY}
-
-Previous MouseX - ${this.previous.mouseX}
-Previous MouseY - ${this.previous.mouseY}
-
-Mouse X Delta - ${this._state.mouseXDelta}
-Mouse Y Delta - ${this._state.mouseYDelta}`
-            console.log(debugString);
+            console.log(`movementX ${e.movementX}\nmovementY ${e.movementY}`)
         }
     }
 

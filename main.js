@@ -35,7 +35,7 @@ function initialise() {
     const planeMaterial = new THREE.MeshBasicMaterial({color: 0xffdda0000})
     planeMaterial.side = THREE.DoubleSide
     const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-    plane.position.z = 8;
+    plane.position.z = -5;
     plane.position.y = -0.55;
     plane.rotation.x-=1.55;
     scene.add(plane);
@@ -54,13 +54,25 @@ function initialise() {
 
     const controller = new FirstPersonCameraController(camera);
 
-    function animate() {
-        requestAnimationFrame(animate);
-        renderer.render(scene, camera);
-        controller.update();
+    // TODO implement deltaTime and pass to update function
+
+    function animate(deltaTime)
+    {
+        console.log(deltaTime)
+        requestAnimationFrame(animate)
+        renderer.render(scene, camera)
+        controller.update(deltaTime)
     }
 
-    animate();
+    animate(document.timeline.currentTime);
+
+    // function animate() {
+    //     requestAnimationFrame(animate);
+    //     renderer.render(scene, camera);
+    //     controller.update();
+    // }
+
+    // animate();
 }
 
 function getAspectRatio()
