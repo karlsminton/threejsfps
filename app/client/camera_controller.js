@@ -75,14 +75,13 @@ class FirstPersonCameraController
         const qx = new THREE.Quaternion();
         qx.setFromAxisAngle(new THREE.Vector3(0, 1, 0), this.phi)
 
-        const forward = new THREE.Vector3(0, 0, -1)
+        const forward = new THREE.Vector3(0, 0, 1)
         forward.applyQuaternion(qx)
-        const val = forwardVelocity * deltaTime * 10;
-        forward.multiplyScalar(forwardVelocity * deltaTime * 10);
+        forward.multiplyScalar(forwardVelocity / deltaTime * 1);
 
-        const left = new THREE.Vector3(-1, 0, 0)
+        const left = new THREE.Vector3(1, 0, 0)
         left.applyQuaternion(qx)
-        left.multiplyScalar(sidewaysVelocity * deltaTime * 10);
+        left.multiplyScalar(sidewaysVelocity / deltaTime * 1);
 
         this.translation.add(forward)
         this.translation.add(left)
