@@ -3,46 +3,40 @@ import { InputController } from '/app/client/input.js'
 
 class FirstPersonCameraController
 {
-    static FIELD_OF_VIEW = 50
+    static FIELD_OF_VIEW = 50;
 
-    static FRUSTUM_NEAR = 0.1
+    static FRUSTUM_NEAR = 0.1;
 
-    static FRUSTUM_FAR = 1000
+    static FRUSTUM_FAR = 1000;
+
+    static HEAD_HEIGHT = 1.7;
 
     previousTimestamp = null;
 
     constructor(camera)
     {
-        this.camera = camera
-        this.input = new InputController()
-        this.rotation = new THREE.Quaternion()
-        this.translation = new THREE.Vector3(0, 0, 0)
-        this.phi = 0
-        this.theta = 0
+        this.camera = camera;
+        this.input = new InputController();
+        this.rotation = new THREE.Quaternion();
+        this.translation = new THREE.Vector3(0, 1.7, 0);
+        this.phi = 0;
+        this.theta = 0;
     }
 
     update(time) {
-        // if (this.previousTimestamp === null) {
-        //     this.previousTimestamp = t;
-        // }
-
-        // var deltaTime = timestamp - this.previousTimestamp;
-
         const deltaTime = this.previousTimestamp - time
-
 
         this.updateRotation(deltaTime)
         this.camera.quaternion.copy(this.rotation)
         this.camera.position.copy(this.translation)
         this.input.update()
         this.updateTranslation(deltaTime)
-        console.log(deltaTime)
+
+        if (window.debug === true) {
+            console.log(`deltaTime: ${deltaTime}`)
+        }
 
         this.previousTimestamp = time
-
-        // this.previousTimestamp = timestamp;
-        // console.log(this.rotation)
-        // console.log(this.translation)
     }
 
     updateRotation(deltaTime) {

@@ -1,13 +1,11 @@
 import * as THREE from 'three';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import { FirstPersonCameraController } from '/app/client/camera_controller.js'
+import { SceneManager } from './app/client/scene_manager';
 
 function initialise() {
     const scene = new THREE.Scene();
-    // const loader = new FBXLoader();
-    // loader.load('static/swat.fbx', (o) => scene.add(o))
-
-    const camera = new THREE.PerspectiveCamera(
+    window.camera = new THREE.PerspectiveCamera(
         FirstPersonCameraController.FIELD_OF_VIEW,
         getAspectRatio(),
         FirstPersonCameraController.FRUSTUM_NEAR,
@@ -22,26 +20,9 @@ function initialise() {
     document.body.appendChild(window.canvas);
 
     // TODO abstract making a map
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshBasicMaterial({color: 0x00ff00});
-    const cube = new THREE.Mesh(geometry, material);
-    cube.position.y = 0.2;
-    scene.add(cube);
-
-    const light = new THREE.AmbientLight(0x404040);
-    scene.add(light);
-
-    const planeGeometry = new THREE.PlaneGeometry(20, 20);
-    const planeMaterial = new THREE.MeshBasicMaterial({color: 0xffdda0000})
-    planeMaterial.side = THREE.DoubleSide
-    const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-    plane.position.z = -5;
-    plane.position.y = -0.55;
-    plane.rotation.x-=1.55;
-    scene.add(plane);
-
-    camera.position.z = 10;
-
+    const sceneManager = new SceneManager(scene)
+    sceneManager.makeScene()
+    
     // Extract the following into separate client code
     let fullscreenRequested = false;
     if (document.fullscreenEnabled) {
@@ -58,21 +39,13 @@ function initialise() {
 
     function animate(deltaTime)
     {
-        console.log(deltaTime)
-        requestAnimationFrame(animate)
-        renderer.render(scene, camera)
-        controller.update(deltaTime)
+        requestAnimationFrame(animate);
+        renderer.render(scene, camera);
+        controller.update(deltaTime);
+        sceneManager.update(deltaTime);
     }
 
     animate(document.timeline.currentTime);
-
-    // function animate() {
-    //     requestAnimationFrame(animate);
-    //     renderer.render(scene, camera);
-    //     controller.update();
-    // }
-
-    // animate();
 }
 
 function getAspectRatio()
