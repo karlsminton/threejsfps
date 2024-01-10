@@ -17,7 +17,7 @@ class SceneManager {
         // var characterControls;
         const loader = new FBXLoader();
         loader.load('static/fastrun.fbx', (object) => {
-            console.log(object);
+            // console.log(object);
 
             // model is massive - scale down
             object.scale.set(0.01, 0.01, 0.01);
@@ -35,7 +35,7 @@ class SceneManager {
                 v.play();
             });
 
-            console.log(animations);
+            // console.log(animations);
 
             this.characterControls = new AnimationController(mixer, animationsMap);
         });
@@ -48,14 +48,14 @@ class SceneManager {
         const planeMaterial = new THREE.MeshBasicMaterial({color: 0xffdda0000})
         planeMaterial.side = THREE.DoubleSide
 
-        window.window.plane = new THREE.Mesh(planeGeometry, planeMaterial);
+        window.plane = new THREE.Mesh(planeGeometry, planeMaterial);
         window.plane.position.z = -5;
         window.plane.position.y = 0;
         window.plane.rotation.x-=1.55;
         this.scene.add(window.plane);
     }
 
-    update(deltaTime) {
+    update = (deltaTime) => {
         this.characterControls.update(deltaTime);
     }
 }

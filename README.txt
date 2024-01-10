@@ -15,4 +15,3 @@ npx vite
 
 - https://www.youtube.com/results?search_query=webgpu
 - https://webkit.org/demos/webgpu/
-

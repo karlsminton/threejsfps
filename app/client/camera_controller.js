@@ -24,13 +24,17 @@ class FirstPersonCameraController
     }
 
     update(time) {
-        const deltaTime = this.previousTimestamp - time
+        const deltaTime = time;
+        // const deltaTime = this.previousTimestamp - time
 
         this.updateRotation(deltaTime)
         this.camera.quaternion.copy(this.rotation)
         this.camera.position.copy(this.translation)
         this.input.update()
         this.updateTranslation(deltaTime)
+
+        // console.log(this.translation);
+        // console.log(this.camera.position);
 
         if (window.debug === true) {
             console.log(`deltaTime: ${deltaTime}`)
@@ -63,6 +67,8 @@ class FirstPersonCameraController
     }
 
     updateTranslation(deltaTime) {
+        // console.log(deltaTime);
+        // deltaTime = 1;
         const forwardVelocity = (this.input.keys[InputController.KEY_W] === true ? 1 : 0) + (this.input.keys[InputController.KEY_S] === true ? -1 : 0)
         const sidewaysVelocity = (this.input.keys[InputController.KEY_A] ? 1 : 0) + (this.input.keys[InputController.KEY_D] ? -1 : 0)
 
@@ -71,6 +77,8 @@ class FirstPersonCameraController
 
         const forward = new THREE.Vector3(0, 0, 1)
         forward.applyQuaternion(qx)
+        const forwardVelocityCalc = forwardVelocity / deltaTime * 1;
+        // console.log(forwardVelocityCalc);
         forward.multiplyScalar(forwardVelocity / deltaTime * 1);
 
         const left = new THREE.Vector3(1, 0, 0)
