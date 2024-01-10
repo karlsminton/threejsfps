@@ -56,7 +56,9 @@ class SceneManager {
     }
 
     update(deltaTime) {
-        this.characterControls.update(deltaTime);
+        if (this.characterControls !== undefined) {
+            this.characterControls.update(deltaTime);
+        }
     }
 }
 
