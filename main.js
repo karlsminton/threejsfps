@@ -4,8 +4,34 @@ import { FirstPersonCameraController } from '/app/client/camera_controller.js'
 import { SceneManager } from './app/client/scene_manager';
 
 class App {
+
+    /**
+     * threejs scene
+     */
+    scene;
+
+    /**
+     * threejs renderer
+     */
+    renderer;
+
+    /**
+     * FirstPersonCameraController
+     */
+    controller;
+
+    /**
+     * SceneManager
+     */
+    sceneManager;
+
+    /**
+     * @type int
+     */
+    time = null;
+
     initialise = () => {
-        const scene = new THREE.Scene();
+        this.scene = new THREE.Scene();
         window.camera = new THREE.PerspectiveCamera(
             FirstPersonCameraController.FIELD_OF_VIEW,
             this.getAspectRatio(),
@@ -13,44 +39,49 @@ class App {
             FirstPersonCameraController.FRUSTUM_FAR
         );
 
-        const renderer = new THREE.WebGLRenderer();
+        this.renderer = new THREE.WebGLRenderer();
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
 
-        renderer.setSize(window.innerWidth, window.innerHeight);
-
-        window.canvas = renderer.domElement;
+        window.canvas = this.renderer.domElement;
         document.body.appendChild(window.canvas);
 
         // TODO abstract making a map
-        const sceneManager = new SceneManager(scene)
-        sceneManager.makeScene()
+        this.sceneManager = new SceneManager(this.scene);
+        this.sceneManager.makeScene();
         
         // Extract the following into separate client code
         let fullscreenRequested = false;
         if (document.fullscreenEnabled) {
-            fullscreenRequested = window.confirm("requestFullscreen")
+            fullscreenRequested = window.confirm("requestFullscreen");
         }
 
         if (fullscreenRequested) {
             window.canvas.requestFullscreen();
         }
 
-        const controller = new FirstPersonCameraController(camera);
+        this.controller = new FirstPersonCameraController(camera);
 
         // TODO implement deltaTime and pass to update function
+        this.animate(document.timeline.currentTime);
+    }
 
-        function animate(deltaTime)
-        {
-            requestAnimationFrame(animate);
-            renderer.render(scene, camera);
-            controller.update(deltaTime);
-            sceneManager.update(deltaTime);
+    animate = (deltaTime) => {
+        if (this.time === null) {
+            this.time = new THREE.Clock();
         }
+        const delta = this.time.getDelta();
 
-        animate(document.timeline.currentTime);
+        // console.log(`${deltaTime} \n${delta}`);
+        this.renderer.render(this.scene, camera);
+
+        this.controller.update(delta);
+
+        this.sceneManager.update(delta);
+        requestAnimationFrame(this.animate);
     }
 
     getAspectRatio = () => {
-        return window.innerWidth / window.innerHeight
+        return window.innerWidth / window.innerHeight;
     }
 
     requestPointerLock = () => {

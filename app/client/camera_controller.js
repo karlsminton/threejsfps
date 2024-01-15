@@ -13,6 +13,8 @@ class FirstPersonCameraController
 
     previousTimestamp = null;
 
+    unitSpeed = 500;
+
     constructor(camera)
     {
         this.camera = camera;
@@ -24,7 +26,7 @@ class FirstPersonCameraController
     }
 
     update(time) {
-        const deltaTime = this.previousTimestamp - time
+        const deltaTime = time
 
         this.updateRotation(deltaTime)
         this.camera.quaternion.copy(this.rotation)
@@ -36,7 +38,7 @@ class FirstPersonCameraController
             console.log(`deltaTime: ${deltaTime}`)
         }
 
-        this.previousTimestamp = time
+        // this.previousTimestamp = time
     }
 
     updateRotation(deltaTime) {
@@ -63,19 +65,23 @@ class FirstPersonCameraController
     }
 
     updateTranslation(deltaTime) {
+        if (deltaTime == 0) {
+            deltaTime = .0001;
+        }
+
         const forwardVelocity = (this.input.keys[InputController.KEY_W] === true ? 1 : 0) + (this.input.keys[InputController.KEY_S] === true ? -1 : 0)
         const sidewaysVelocity = (this.input.keys[InputController.KEY_A] ? 1 : 0) + (this.input.keys[InputController.KEY_D] ? -1 : 0)
 
         const qx = new THREE.Quaternion();
         qx.setFromAxisAngle(new THREE.Vector3(0, 1, 0), this.phi)
 
-        const forward = new THREE.Vector3(0, 0, 1)
+        const forward = new THREE.Vector3(0, 0, -1)
         forward.applyQuaternion(qx)
-        forward.multiplyScalar(forwardVelocity / deltaTime * 1);
+        forward.multiplyScalar(forwardVelocity / (deltaTime * this.unitSpeed));
 
-        const left = new THREE.Vector3(1, 0, 0)
+        const left = new THREE.Vector3(-1, 0, 0)
         left.applyQuaternion(qx)
-        left.multiplyScalar(sidewaysVelocity / deltaTime * 1);
+        left.multiplyScalar(sidewaysVelocity / (deltaTime * this.unitSpeed));
 
         this.translation.add(forward)
         this.translation.add(left)
