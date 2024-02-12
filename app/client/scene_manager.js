@@ -1,20 +1,26 @@
 import * as THREE from 'three';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
+import * as CANNON from 'cannon-es';
 
 class SceneManager {
     
     scene;
     
     characterControls;
+
+    physicsWorld;
+
+    objectsToUpdate = [];
     
     constructor(scene)
     {
         this.scene = scene
+        this.physicsWorld = new CANNON.World();
+        this.physicsWorld.gravity.set(0, -20.00, 0);
     }
 
     makeScene()
     {
-        // var characterControls;
         const loader = new FBXLoader();
         loader.load('static/fastrun.fbx', (object) => {
             console.log(object);
@@ -53,12 +59,60 @@ class SceneManager {
         window.plane.position.y = 0;
         window.plane.rotation.x-=1.55;
         this.scene.add(window.plane);
+
+        const sphereBody = new CANNON.Body({
+            mass: 15,
+            shape: new CANNON.Sphere(1)
+        });
+
+        sphereBody.position.set(0, 10, -5);
+        this.physicsWorld.addBody(sphereBody);
+
+        const groundBody = new CANNON.Body({
+            type: CANNON.Body.STATIC,
+            shape: new CANNON.Plane()
+        });
+        groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0);
+        this.physicsWorld.addBody(groundBody);
+
+        const sphereGeometry = new THREE.SphereGeometry(1);
+        const sphereMaterial = new THREE.MeshNormalMaterial();
+        const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
+
+        // add object to array for checking and updating position 
+        // based on physics world
+        this.objectsToUpdate = [...this.objectsToUpdate, {threeId: sphereMesh.id, cannonId: sphereBody.id}];
+
+        this.scene.add(sphereMesh);
+
+        // the below objects reference all entities in threejs / cannon
+        // console.log(this.scene.children);
+        // console.log(this.physicsWorld.bodies);
     }
 
     update(deltaTime) {
         if (this.characterControls !== undefined) {
             this.characterControls.update(deltaTime);
         }
+
+        for (var key in this.objectsToUpdate) {
+            var object = this.objectsToUpdate[key]
+            var mesh = this.scene.getObjectById(object.threeId);
+        
+            if (mesh) {
+                var physicsObject = this.physicsWorld.bodies.filter((item) => {
+                    return item.id === object.cannonId;
+                })[0];
+
+                // console.log(physicsObject);
+                // console.log(physicsObject.position);
+
+                mesh.position.copy(physicsObject.position);
+                mesh.quaternion.copy(physicsObject.quaternion);
+            }
+        }
+        
+        this.physicsWorld.fixedStep();
     }
 }
 
